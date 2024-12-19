@@ -29,10 +29,9 @@ class VenueController extends AbstractController
 
         ]);
 
-        $decodedLsit = json_decode($rawResponse->getContent());
-
+        $decodedList = json_decode($rawResponse->getContent());
         $venueList = [];
-        foreach ($decodedLsit as $placeItem) {
+        foreach ($decodedList as $placeItem) {
             $venue = new Venue();
             $venue
                 ->setId($placeItem->id)
@@ -44,16 +43,20 @@ class VenueController extends AbstractController
 
             $venueList[] = $venue;
         }
-        $new = array_map(function ($v) {
-            return $v->getName();
+
+
+        $new = array_map(function (Venue $v) {
+            return [
+                'ident' => $v->getIdent(),
+                'name' => $v->getName(),
+                'image' => 'https://images.kinomax.ru/1300' . $v->getImage(),
+                'address' => $v->getAddress()
+            ];
         }, $venueList);
 
 
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/VenueController.php',
-            'names' => $new,
-            'array' => $venueList
+            'venues' => $new,
         ]);
     }
 }
